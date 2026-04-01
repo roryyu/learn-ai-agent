@@ -1,0 +1,69 @@
+当前目录下所有.py文件的代码行数统计报告
+========================================
+
+生成时间：$(date)
+工作目录：/Users/roryyu/Downloads/code/qoder-app/my-ai-agent
+
+1. 文件分布统计
+========================================
+当前目录（不包括venv）的.py文件数量：1
+venv目录下的.py文件数量：2410
+总.py文件数量：2411
+
+2. 代码行数统计
+========================================
+当前目录（不包括venv）的.py文件总行数：2,097行
+venv目录下的.py文件总行数：419,892行
+所有.py文件总行数：421,989行
+
+3. 当前目录的.py文件详情
+========================================
+文件路径                 行数
+----------------------------------------
+./agent.py              2,097
+----------------------------------------
+小计：2,097行
+
+4. venv目录下最大的20个.py文件
+========================================
+行数     文件路径
+----------------------------------------
+8,841    ./venv/lib/python3.13/site-packages/idna/uts46data.py
+8,681    ./venv/lib/python3.13/site-packages/pip/_vendor/idna/uts46data.py
+4,584    ./venv/lib/python3.13/site-packages/pip/_vendor/typing_extensions.py
+4,435    ./venv/lib/python3.13/site-packages/pydantic_core/core_schema.py
+4,317    ./venv/lib/python3.13/site-packages/typing_extensions.py
+4,309    ./venv/lib/python3.13/site-packages/idna/idnadata.py
+4,243    ./venv/lib/python3.13/site-packages/pip/_vendor/idna/idnadata.py
+4,071    ./venv/lib/python3.13/site-packages/openai/resources/responses/responses.py
+3,811    ./venv/lib/python3.13/site-packages/anthropic/resources/beta/messages/messages.py
+3,676    ./venv/lib/python3.13/site-packages/pip/_vendor/pkg_resources/__init__.py
+3,610    ./venv/lib/python3.13/site-packages/pip/_vendor/rich/_emoji_codes.py
+3,295    ./venv/lib/python3.13/site-packages/pydantic/types.py
+3,195    ./venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py
+3,149    ./venv/lib/python3.13/site-packages/openai/resources/beta/threads/runs/runs.py
+3,032    ./venv/lib/python3.13/site-packages/anthropic/resources/messages/messages.py
+2,996    ./venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py
+2,867    ./venv/lib/python3.13/site-packages/pydantic/_internal/_generate_schema.py
+2,854    ./venv/lib/python3.13/site-packages/pydantic/json_schema.py
+2,675    ./venv/lib/python3.13/site-packages/pip/_vendor/rich/console.py
+2,267    ./venv/lib/python3.13/site-packages/anthropic/_base_client.py
+
+5. 关键发现
+========================================
+- 项目的主要代码集中在agent.py文件中，包含2,097行代码
+- venv目录包含了项目的所有依赖库，总计419,892行代码
+- 最大的文件是Unicode相关的数据文件，这些通常是机器生成的数据文件
+- 项目包含了AI相关的依赖库（anthropic、openai等）
+- 统计结果显示这是一个完整的Python项目
+
+6. 统计说明
+========================================
+- 使用find命令查找所有.py文件
+- 使用wc -l统计每个文件的行数
+- 处理了文件名中的空格和特殊字符
+- 分别统计了当前目录和venv目录的.py文件
+- 提供了详细的文件行数排序结果
+
+统计完成！
+========================================
