@@ -1,26 +1,23 @@
 # My AI Agent
 
-基于 [learn-claude-code](https://github.com/shareAI-lab/learn-claude-code) 教程构建的最小可用 AI Agent。
+基于 [learn-claude-code](https://github.com/shareAI-lab/learn-claude-code) 教程构建的完整 AI Agent 系统。
 
 ## 核心理念
 
-> **"One loop & Bash is all you need"** —— 一个循环 + Bash = 一个Agent
+> **"One loop & dispatch map is all you need"** —— 一个循环 + 分发映射 = 一个Agent
 
 Agent的智能来自于模型本身，代码只是提供操作环境的 **Harness（工具）**。
 
 ## 项目结构
 
 ```
-my-ai-agent/
-├── src/              # 源代码目录
-│   ├── __init__.py   # 包初始化文件
-│   └── main.py       # 主程序模块
-├── tests/            # 测试目录
-│   └── __init__.py   # 测试包初始化文件
-├── agent.py          # 核心Agent实现
+learn-ai-agent/
+├── agent.py          # 核心Agent实现（~3800行，24个工具）
 ├── requirements.txt  # Python依赖
 ├── .env.example      # 环境变量示例
-└── README.md         # 本文件
+├── .gitignore        # Git忽略规则
+├── README.md         # 本文件
+└── learn-claude-code-tutorial-summary.md  # 教程学习心得
 ```
 
 ## 快速开始
@@ -35,8 +32,12 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# 编辑 .env 文件，填入你的 Anthropic API Key
+# 编辑 .env 文件，填入你的 API Key
 ```
+
+支持两种API类型：
+- **Anthropic API** (默认): `API_TYPE=anthropic`
+- **OpenAI兼容API**: `API_TYPE=openai`
 
 ### 3. 运行Agent
 
@@ -46,98 +47,135 @@ python agent.py
 
 ## 功能特性
 
-### 当前实现 (v0.1)
+### 已实现功能 (s01-s12)
 
-- ✅ **Agent循环** (s01): 核心的 `while stop_reason == "tool_use"` 循环
-- ✅ **Bash工具** (s01): 执行shell命令，带安全检查
-- ✅ **交互式REPL**: 命令行对话界面
+| 阶段 | 功能 | 工具 | 描述 |
+|------|------|------|------|
+| s01 | Agent循环 | bash | 核心循环 + Bash执行 |
+| s02 | 工具系统 | read_file, write_file, edit_file | 文件操作工具 |
+| s03 | 任务规划 | TodoWrite | 任务列表 + Nag提醒 |
+| s04 | 子Agent | task | 上下文隔离的子任务 |
+| s05 | 技能加载 | load_skill | 两层注入技能系统 |
+| s06 | 上下文压缩 | compact | 三层压缩策略 |
+| s07 | 任务系统 | task_create/update/list | DAG任务图 |
+| s08 | 后台任务 | background | 异步执行 |
+| s09 | Agent团队 | team_create/add_agent | 多Agent协作 |
+| s10 | 团队协议 | MessageBus/Protocol | 标准化通信 |
+| s11 | 自主Agent | autonomous | 目标驱动自主执行 |
+| s12 | 工作树隔离 | worktree_create | 文件隔离环境 |
+
+**总计: 24个工具**
 
 ### 架构图
 
 ```
-+--------+      +-------+      +---------+
-|  User  | ---> |  LLM  | ---> |  Bash   |
-| prompt |      |       |      | execute |
-+--------+      +---+---+      +----+----+
-                    ^                |
-                    |   tool_result  |
-                    +----------------+
-                    (loop until done)
+┌─────────────────────────────────────────────────────────┐
+│                      Agent Core                         │
+│  ┌─────────┐    ┌─────────────┐    ┌─────────────────┐ │
+│  │  LLM    │───▶│  Tool Call  │───▶│  Dispatch Map   │ │
+│  │         │◀───│  Handler    │◀───│  (24 tools)     │ │
+│  └─────────┘    └─────────────┘    └─────────────────┘ │
+│        ▲                                    │           │
+│        └────────────────────────────────────┘           │
+│                    (loop until done)                    │
+└─────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌──────────────┐    ┌────────────────┐    ┌────────────────┐
+│ Task System  │    │  Agent Teams   │    │   Autonomous   │
+│ (s07)        │    │  (s09+s10)     │    │   Agents(s11)  │
+└──────────────┘    └────────────────┘    └────────────────┘
 ```
 
 ## 使用示例
 
+### 基础对话
+
 ```
 ==================================================
-🤖 My AI Agent - 最小可用版本
+🤖 My AI Agent - 完整版 (s01-s12)
 ==================================================
-工作目录: /Users/roryyu/Downloads/minimax-project/my-ai-agent
-模型: claude-3-5-sonnet-20241022
+工作目录: /Users/roryyu/.../learn-ai-agent
+API类型: openai
+模型: gpt-4o
 
 提示: 输入 'exit' 或 'quit' 退出
 
-👤 你: 列出当前目录的文件
+👤 你: 创建一个Python文件，输出Hello World
 
-🔧 执行: ls -la
-📤 输出: total 32...
+🔧 执行: write_file
+📤 输出: ✅ 成功写入文件: hello.py
 
-🤖 Agent: 当前目录包含以下文件：
-- agent.py
-- requirements.txt
-- .env.example
-- README.md
+🤖 Agent: 已创建 hello.py 文件！
 
 👤 你: exit
 
 👋 再见!
 ```
 
-## 下一步计划
+### 使用自主Agent
 
-按照 learn-claude-code 教程逐步添加：
+```python
+# 启动自主Agent完成复杂任务
+autonomous(
+    description="重构代码，提取所有工具函数到单独文件",
+    success_criteria=["工具函数已提取", "主文件可正常导入"],
+    max_iterations=20
+)
+```
 
-- [ ] **s02**: 添加 read_file, write_file, edit_file 工具
-- [ ] **s03**: 添加 TodoWrite 任务规划
-- [ ] **s04**: 添加 Subagent 子任务
-- [ ] **s05**: 添加 Skills 技能加载
-- [ ] **s06**: 添加 Context Compact 上下文压缩
-- [ ] **s07**: 添加 Task System 任务系统
-- [ ] **s08**: 添加 Background Tasks 后台任务
-- [ ] **s09+**: 添加 Agent Teams 团队协作
+### 创建工作树
+
+```python
+# 创建隔离的工作环境
+worktree_create(
+    name="feature-branch",
+    branch="feature/new-feature"
+)
+```
 
 ## 核心代码
 
-Agent循环的核心逻辑（约30行）：
+Agent循环的核心逻辑：
 
 ```python
 def agent_loop(messages: list):
     while True:
-        response = client.messages.create(
-            model=MODEL, system=SYSTEM,
-            messages=messages, tools=TOOLS,
-            max_tokens=4000,
-        )
-        messages.append({"role": "assistant", "content": response.content})
+        # s03: Nag提醒
+        if TODO_MANAGER.should_nag():
+            messages.append(nag_message)
         
-        if response.stop_reason != "tool_use":
-            return
+        # s06: 上下文压缩
+        if COMPACTOR.should_auto_compact(messages):
+            run_compact(messages)
         
-        results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                output = run_bash(block.input["command"])
-                results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": output,
-                })
-        messages.append({"role": "user", "content": results})
+        response, api_format = call_llm(messages, TOOLS)
+        
+        if stop_reason != "tool_use":
+            return  # 完成
+        
+        # Dispatch map 执行工具
+        for tool_call in tool_calls:
+            output = TOOL_HANDLERS[tool_call.name](**tool_call.input)
+            messages.append(tool_result)
+```
+
+## 环境变量配置
+
+```bash
+# .env 文件示例
+API_TYPE=openai                    # anthropic 或 openai
+MODEL=gpt-4o                       # 模型名称
+API_KEY=your-api-key-here          # API密钥
+API_BASE=https://api.openai.com/v1 # 可选：自定义API端点
 ```
 
 ## 参考资料
 
 - [learn-claude-code](https://github.com/shareAI-lab/learn-claude-code) - 原始教程
 - [Anthropic API文档](https://docs.anthropic.com/)
+- [OpenAI API文档](https://platform.openai.com/)
 
 ---
 
